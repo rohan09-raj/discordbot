@@ -1,9 +1,23 @@
-import { HELLO_COMMAND, VERIFY_COMMAND, TASK_COMMAND } from "./commands.js";
-import { registerResponseType } from "./types.js";
-import { config } from "dotenv";
-import fetch from "node-fetch";
+// import {
+//   HELLO_COMMAND,
+//   VERIFY_COMMAND,
+//   TASK_COMMAND,
+//   POC_CHANGE_DISCORD_NAME,
+// } from "./commands";
+// import { registerResponseType } from "./types";
+// import fetch from "node-fetch";
 
+import {
+  HELLO_COMMAND,
+  VERIFY_COMMAND,
+  TASK_COMMAND,
+  POC_CHANGE_DISCORD_NAME,
+  GENERATE_LINK,
+} from "./commands.js";
+import { registerResponseType } from "./types";
+import { config } from "dotenv";
 config();
+
 async function registerGuildCommands(
   token?: string,
   applicationId?: string,
@@ -44,7 +58,13 @@ async function registerCommands(url: string, token: string) {
       Authorization: `Bot ${token}`,
     },
     method: "PUT",
-    body: JSON.stringify([HELLO_COMMAND, VERIFY_COMMAND, TASK_COMMAND]),
+    body: JSON.stringify([
+      HELLO_COMMAND,
+      VERIFY_COMMAND,
+      TASK_COMMAND,
+      POC_CHANGE_DISCORD_NAME,
+      GENERATE_LINK,
+    ]),
   });
 
   if (response.ok) {

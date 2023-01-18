@@ -4,8 +4,14 @@ import {
   InteractionType,
   verifyKey,
 } from "discord-interactions";
-import { HELLO_COMMAND, TASK_COMMAND, VERIFY_COMMAND } from "./commands";
 import {
+  GENERATE_LINK,
+  HELLO_COMMAND,
+  POC_CHANGE_DISCORD_NAME,
+  TASK_COMMAND,
+  VERIFY_COMMAND,
+} from "./commands.js";
+import type {
   ENV,
   messageTypes,
   resultTypes,
@@ -13,6 +19,8 @@ import {
   taskTypes,
 } from "./types";
 import firestoreOperations from "./utils/firebase";
+import fetchRdsDetails from "./fetchRdsDetails";
+import modifyGuildMembers from "./modifyGuildMember";
 
 class JsonResponse extends Response {
   constructor(body: unknown, init?: ResponseInit) {
@@ -84,7 +92,7 @@ router.post("/", async (request, env: ENV) => {
       case TASK_COMMAND.name.toLowerCase(): {
         console.log("Handling task command");
         let username = "";
-        if (message.data.options) username = message.data.options[0]?.value;
+        if (message.data.options) username = message.data.options[0].value;
         const response = await fetch(
           `https://api.realdevsquad.com/tasks/${username}`
         );
@@ -114,6 +122,90 @@ router.post("/", async (request, env: ENV) => {
           type: 4,
           data: {
             content: `${discordReply}`,
+          },
+        });
+      }
+      case POC_CHANGE_DISCORD_NAME.name.toLowerCase(): {
+        const rdsData = await fetchRdsDetails(message.data.options[0].value);
+        const nameChangeResponse = await modifyGuildMembers(
+          message.member.user.id,
+          rdsData,
+          env.DISCORD_TOKEN,
+          message.guild_id
+        );
+        console.log(nameChangeResponse);
+
+        //Get all roles from server
+        // const fetchRoles = await fetch(
+        //   `https://discord.com/api/v10/guilds/${env.DISCORD_TEST_GUILD_ID}/roles`,
+        //   {
+        //     method: "GET",
+        //     headers: {
+        //       "Content-Type": "application/json",
+        //       Authorization: `Bot ${env.DISCORD_TOKEN}`,
+        //     }
+        //   }
+        // );
+
+        // const rolesData: Array<discordRoleData> = await fetchRoles.json();
+        // console.log(rolesData);
+        // const roles:discordRoleObject ={}
+        // rolesData.forEach((role: discordRoleData)=>{
+        //     console.log({...role});
+        //     roles[role.name] = {name: role.name , id: role.id}
+        // })
+
+        //Assign role to the user
+        // await fetch(
+        //   `https://discord.com/api/v10/guilds/${env.DISCORD_TEST_GUILD_ID}/members/${message.member.user.id}/roles/${roles["Developer"].id}`,
+        //   {
+        //     method: "PUT",
+        //     headers: {
+        //       "Content-Type": "application/json",
+        //       Authorization: `Bot ${env.DISCORD_TOKEN}`,
+        //     }
+        //   }
+        // );
+
+        return new JsonResponse({
+          type: 4,
+          data: {
+            content: "Hello change name command",
+          },
+        });
+      }
+      case GENERATE_LINK.name.toLowerCase(): {
+        const generationTime = Date.now();
+        const randomNumber = Math.floor(Math.random() * 1000000);
+        const number = new TextEncoder().encode(
+          (randomNumber + generationTime).toString()
+        );
+        const digest = await crypto.subtle.digest(
+          {
+            name: "SHA-256",
+          },
+          number
+        );
+        const token = [...new Uint8Array(digest)]
+          .map((b) => b.toString(16).padStart(2, "0"))
+          .join("");
+
+        //data to be sent to rds-backend
+        const data = {
+          token: token,
+          discordId: message.member.user.id,
+          generationTime: new Date(generationTime),
+          expiry: new Date(generationTime + 1000 * 60 * 2),
+          randomNumber: randomNumber,
+          linkStatus: "not-Linked",
+        };
+
+        console.log(data);
+        const url = `https://my.realdevsquad.com/link-discord/?token=${token}`;
+        return new JsonResponse({
+          type: 4,
+          data: {
+            content: url,
           },
         });
       }

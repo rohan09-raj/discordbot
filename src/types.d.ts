@@ -1,6 +1,14 @@
 export interface messageTypes {
   type: number;
   data: messageDataDataTypes;
+  member: {
+    user: {
+      id: number;
+      username: string;
+    };
+    roles: Array<string>;
+  };
+  guild_id: number;
 }
 
 export interface messageDataDataTypes {
@@ -41,6 +49,7 @@ export interface ENV {
   FIRESTORE_PRIVATE_KEY: string;
   DISCORD_TOKEN: string;
   FIRESTORE_SERVICE_ACCOUNT: string;
+  DISCORD_TEST_GUILD_ID: string;
 }
 
 export interface resultTypes {
@@ -66,4 +75,13 @@ export interface taskTypes {
 export interface taskResponseTypes {
   statusCode?: number;
   tasks?: Array<taskTypes>;
+}
+
+export interface discordRoleObject {
+  [key: string]: discordRoleData;
+}
+
+export interface discordRoleData {
+  name: string;
+  id: number;
 }
