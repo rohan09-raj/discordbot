@@ -31,6 +31,8 @@
     "wrangler": "^2.5.0"
   },
   "dependencies": {
+    "@sagi.io/workers-jwt": "^0.0.23",
+    "@tsndr/cloudflare-worker-jwt": "^2.1.4",
     "@types/node-fetch": "^2.6.2",
     "discord-interactions": "^3.2.0",
     "itty-router": "^3.0.11",

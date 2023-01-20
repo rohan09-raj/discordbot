@@ -21,6 +21,8 @@ import type {
 import firestoreOperations from "./utils/firebase";
 import fetchRdsDetails from "./fetchRdsDetails";
 import modifyGuildMembers from "./modifyGuildMember";
+import getPemKey from "./utils/getPemKey.js";
+import generateJwt from "./utils/generateJwt.js";
 
 class JsonResponse extends Response {
   constructor(body: unknown, init?: ResponseInit) {
@@ -175,37 +177,14 @@ router.post("/", async (request, env: ENV) => {
         });
       }
       case GENERATE_LINK.name.toLowerCase(): {
-        const generationTime = Date.now();
-        const randomNumber = Math.floor(Math.random() * 1000000);
-        const number = new TextEncoder().encode(
-          (randomNumber + generationTime).toString()
-        );
-        const digest = await crypto.subtle.digest(
-          {
-            name: "SHA-256",
-          },
-          number
-        );
-        const token = [...new Uint8Array(digest)]
-          .map((b) => b.toString(16).padStart(2, "0"))
-          .join("");
-
-        //data to be sent to rds-backend
-        const data = {
-          token: token,
-          discordId: message.member.user.id,
-          generationTime: new Date(generationTime),
-          expiry: new Date(generationTime + 1000 * 60 * 2),
-          randomNumber: randomNumber,
-          linkStatus: "not-Linked",
-        };
-
-        console.log(data);
-        const url = `https://my.realdevsquad.com/link-discord/?token=${token}`;
+        console.log("Handling link command");
+        const key = await getPemKey(env.PRIVATE_KEY);
+        const token = await generateJwt("Hello World", key);
+        console.log(token);
         return new JsonResponse({
           type: 4,
           data: {
-            content: url,
+            content: token,
           },
         });
       }
