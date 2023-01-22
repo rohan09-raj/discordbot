@@ -8,10 +8,12 @@ function str2ab(str: string) {
 }
 
 async function getPemKey(key: string) {
+  console.log("converting key to required format");
   const plainKey = key
     .replace("-----BEGIN RSA PRIVATE KEY-----", "")
     .replace("-----END RSA PRIVATE KEY-----", "")
     .replace(/(\r\n|\n|\r)/gm, "");
+  console.log("Plain key", plainKey);
   const binaryKey = str2ab(atob(plainKey));
   console.log("Binary key generated", binaryKey);
   const signer = await crypto.subtle.importKey(

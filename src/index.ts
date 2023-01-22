@@ -178,8 +178,22 @@ router.post("/", async (request, env: ENV) => {
       }
       case GENERATE_LINK.name.toLowerCase(): {
         console.log("Handling link command");
-        const key = await getPemKey(env.PRIVATE_KEY);
-        const token = await generateJwt("Hello World", key);
+        const temp: any = await crypto.subtle.generateKey(
+          {
+            name: "RSA-OAEP",
+            modulusLength: 4096,
+            publicExponent: new Uint8Array([1, 0, 1]),
+            hash: "SHA-256",
+          },
+          true,
+          ["encrypt", "decrypt"]
+        );
+        console.log(temp);
+        const token = await crypto.subtle.sign(
+          { name: "RSASSA-PKCS1-V1_5" },
+          temp.privateKey,
+          new TextEncoder().encode("Ritik")
+        );
         console.log(token);
         return new JsonResponse({
           type: 4,
