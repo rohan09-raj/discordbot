@@ -2,6 +2,7 @@
   "name": "discordbot_v2",
   "version": "1.0.0",
   "description": "",
+  "type": "module",
   "scripts": {
     "start": "wrangler dev",
     "deploy": "wrangler publish",
@@ -10,7 +11,8 @@
     "format-check": "echo 'Checking the formatting of your code 👨‍💻' && prettier --check .",
     "format-fix": "prettier --write .",
     "register": "ts-node-esm src/register.ts",
-    "ngrok": "ngrok http 8787"
+    "ngrok": "ngrok http 8787",
+    "env-check": "ts-node-esm src/env-check.ts"
   },
   "keywords": [],
   "author": "",
