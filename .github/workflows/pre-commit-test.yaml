@@ -13,7 +13,7 @@ jobs:
       - name: Prepare Outputs
         id: prepare-step
         run: |
-          echo "::set-output name=branch_name::${GITHUB_REF_SLUG}";
+          echo "::set-output name=branch_name::${GITHUB_BASE_REF_SLUG}";
     outputs:
       branch_name: ${{ steps.prepare-step.outputs.branch_name }}
   Lint-Check:
