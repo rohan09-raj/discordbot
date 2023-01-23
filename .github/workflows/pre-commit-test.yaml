@@ -22,6 +22,6 @@ jobs:
     environment: ${{ needs.prepare.outputs.branch_name }}
     steps:
       - uses: actions/checkout@v2
-      - run: echo "${{env.KEY}}"
+      - run: npm run env-check
         env:
           KEY: "${{secrets.KEY}}"
