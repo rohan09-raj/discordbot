@@ -21,6 +21,8 @@ jobs:
     runs-on: ubuntu-latest
     environment: ${{ needs.prepare.outputs.branch_name }}
     steps:
+      - env:
+          KEY: "${{secrets.KEY}}"
       - uses: actions/checkout@v2
       - run: npm install
       - run: npm run lint-check
