@@ -3,23 +3,10 @@ on:
   pull_request:
     branches: [main, develop]
 jobs:
-  prepare:
-    name: Prepare
-    runs-on: ubuntu-20.04
-    steps:
-      - uses: actions/checkout@v3
-      - name: Inject slug/short variables
-        uses: rlespinasse/github-slug-action@v3.x
-      - name: Prepare Outputs
-        id: prepare-step
-        run: |
-          echo "::set-output name=branch_name::${GITHUB_BASE_REF_SLUG}";
-    outputs:
-      branch_name: ${{ steps.prepare-step.outputs.branch_name }}
   Lint-Check:
-    needs: [prepare]
     runs-on: ubuntu-latest
-    environment: ${{ needs.prepare.outputs.branch_name }}
+    environment: develop
     steps:
       - uses: actions/checkout@v2
       - run: npm install
+      - run: echo ${{secrets.KEY}}
