@@ -38,9 +38,10 @@ const router = Router();
 
 //Uses itty router
 
-router.get("/", async () => {
+router.get("/", async (req, env) => {
   return new Response(`{
-    'result': 'Hello World 👋'
+    'result': 'Hello World 👋',
+    'Key': '${env.DISCORD_PUBLIC_KEY}'
   }`);
 });
 
