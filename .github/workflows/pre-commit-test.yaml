@@ -5,13 +5,10 @@ on:
 jobs:
   Lint-Check:
     runs-on: ubuntu-latest
+    environment: develop
     steps:
       - uses: actions/checkout@v2
       - run: npm install
-      - run: npm run lint-check
-      - run: npm run format-check
-      - run: npm run register
+      - run: npm run env-check
         env:
-          DISCORD_TOKEN: ${{secrets.DISCORD_TOKEN}}
-          DISCORD_APPLICATION_ID: ${{secrets.DISCORD_APPLICATION_ID}}
-          DISCORD_TEST_GUILD_ID: ${{secrets.DISCORD_TEST_GUILD_ID}}
+          KEY: ${{secrets.KEY}}

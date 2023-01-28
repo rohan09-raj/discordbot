@@ -15,7 +15,6 @@ jobs:
         uses: cloudflare/wrangler-action@2.0.0
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          command: publish --name discordbot
           secrets: |
             DISCORD_TOKEN
             DISCORD_APPLICATION_ID

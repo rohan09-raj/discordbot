@@ -1,9 +1,15 @@
-import { HELLO_COMMAND, VERIFY_COMMAND, TASK_COMMAND } from "./commands.js";
-import { registerResponseType } from "./types.js";
+import {
+  HELLO_COMMAND,
+  VERIFY_COMMAND,
+  TASK_COMMAND,
+  POC_CHANGE_DISCORD_NAME,
+  GENERATE_LINK,
+} from "./commands.js";
+import { registerResponseType } from "./types";
 import { config } from "dotenv";
-import fetch from "node-fetch";
-
+import { fetch } from "./utils/fetch.js";
 config();
+
 async function registerGuildCommands(
   token?: string,
   applicationId?: string,
@@ -44,7 +50,13 @@ async function registerCommands(url: string, token: string) {
       Authorization: `Bot ${token}`,
     },
     method: "PUT",
-    body: JSON.stringify([HELLO_COMMAND, VERIFY_COMMAND, TASK_COMMAND]),
+    body: JSON.stringify([
+      HELLO_COMMAND,
+      VERIFY_COMMAND,
+      TASK_COMMAND,
+      POC_CHANGE_DISCORD_NAME,
+      GENERATE_LINK,
+    ]),
   });
 
   if (response.ok) {
@@ -58,7 +70,7 @@ async function registerCommands(url: string, token: string) {
 }
 
 registerGuildCommands(
-  process.env.DISCORD_TOKEN,
+  process.env.BOT_TOKEN,
   process.env.DISCORD_APPLICATION_ID,
-  process.env.DISCORD_TEST_GUILD_ID
+  process.env.DISCORD_GUILD_ID
 );
