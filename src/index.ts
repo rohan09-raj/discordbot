@@ -48,6 +48,7 @@ router.post("/", async (request, env: ENV) => {
   const message: messageTypes = await request.json();
   if (message.type === InteractionType.PING) {
     console.log("Handling ping request");
+    console.log("DISCORD_PUBLIC_KEY", env.DISCORD_PUBLIC_KEY);
     return new JsonResponse({
       type: InteractionResponseType.PONG,
     });
