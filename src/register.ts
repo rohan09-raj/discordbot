@@ -70,7 +70,7 @@ async function registerCommands(url: string, token: string) {
 }
 
 registerGuildCommands(
-  process.env.DISCORD_TOKEN,
+  process.env.BOT_TOKEN,
   process.env.DISCORD_APPLICATION_ID,
-  process.env.DISCORD_TEST_GUILD_ID
+  process.env.DISCORD_GUILD_ID
 );

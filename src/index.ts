@@ -21,8 +21,6 @@ import type {
 import firestoreOperations from "./utils/firebase";
 import fetchRdsDetails from "./fetchRdsDetails";
 import modifyGuildMembers from "./modifyGuildMember";
-import getPemKey from "./utils/getPemKey.js";
-import generateJwt from "./utils/generateJwt.js";
 
 class JsonResponse extends Response {
   constructor(body: unknown, init?: ResponseInit) {
