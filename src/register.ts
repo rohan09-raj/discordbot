@@ -1,12 +1,3 @@
-// import {
-//   HELLO_COMMAND,
-//   VERIFY_COMMAND,
-//   TASK_COMMAND,
-//   POC_CHANGE_DISCORD_NAME,
-// } from "./commands";
-// import { registerResponseType } from "./types";
-// import fetch from "node-fetch";
-
 import {
   HELLO_COMMAND,
   VERIFY_COMMAND,
@@ -16,6 +7,7 @@ import {
 } from "./commands.js";
 import { registerResponseType } from "./types";
 import { config } from "dotenv";
+import { fetch } from "./utils/fetch.js";
 config();
 
 async function registerGuildCommands(
