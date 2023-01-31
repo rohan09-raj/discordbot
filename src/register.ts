@@ -5,7 +5,7 @@
 //   POC_CHANGE_DISCORD_NAME,
 // } from "./commands";
 // import { registerResponseType } from "./types";
-// import fetch from "node-fetch";
+import fetch from "node-fetch";
 
 import {
   HELLO_COMMAND,

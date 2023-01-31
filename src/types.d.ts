@@ -50,6 +50,8 @@ export interface ENV {
   DISCORD_TOKEN: string;
   FIRESTORE_SERVICE_ACCOUNT: string;
   DISCORD_TEST_GUILD_ID: string;
+  PUBLIC_KEY: string;
+  PRIVATE_KEY: string;
 }
 
 export interface resultTypes {

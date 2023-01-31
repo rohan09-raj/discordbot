@@ -21,6 +21,8 @@ import type {
 import firestoreOperations from "./utils/firebase";
 import fetchRdsDetails from "./fetchRdsDetails";
 import modifyGuildMembers from "./modifyGuildMember";
+import jwt from "@tsndr/cloudflare-worker-jwt";
+import { v1 as uuidv1 } from "uuid";
 
 class JsonResponse extends Response {
   constructor(body: unknown, init?: ResponseInit) {
@@ -176,32 +178,59 @@ router.post("/", async (request, env: ENV) => {
       }
       case GENERATE_LINK.name.toLowerCase(): {
         const generationTime = Date.now();
+        const id = uuidv1();
         const randomNumber = Math.floor(Math.random() * 1000000);
-        const number = new TextEncoder().encode(
-          (randomNumber + generationTime).toString()
+        const encoder = new TextEncoder();
+        const encodedString = encoder.encode(
+          id + generationTime + randomNumber
         );
-        const digest = await crypto.subtle.digest(
-          {
-            name: "SHA-256",
-          },
-          number
+        const hashedString = await crypto.subtle.digest(
+          "SHA-256",
+          encodedString
         );
-        const token = [...new Uint8Array(digest)]
-          .map((b) => b.toString(16).padStart(2, "0"))
+        const hexToken = [...new Uint8Array(hashedString)]
+          .map((x) => x.toString(16).padStart(2, "0"))
           .join("");
 
-        //data to be sent to rds-backend
+        const jwtToken = await jwt.sign(
+          { name: "Cloudflare Worker", exp: Math.floor(Date.now() / 1000) + 2 },
+          env.PRIVATE_KEY,
+          { algorithm: "RS256" }
+        );
+
+        // const data = await jwt.verify(token, env.PUBLIC_KEY, { algorithm: 'RS256', throwError: false });
+
+        const url = `https://my.realdevsquad.com/link-discord/?token=${hexToken}`;
+
         const data = {
-          token: token,
+          token: hexToken,
           discordId: message.member.user.id,
-          generationTime: new Date(generationTime),
-          expiry: new Date(generationTime + 1000 * 60 * 2),
-          randomNumber: randomNumber,
-          linkStatus: "not-Linked",
+          generationTime: Date.now(),
+          expiry: Date.now() + 60 * 2,
+          linkStatus: false,
         };
 
         console.log(data);
-        const url = `https://my.realdevsquad.com/link-discord/?token=${token}`;
+
+        try {
+          const response = await fetch(
+            "https://fd15-2401-4900-4720-5e84-6944-2ce9-6ed5-2444.ngrok.io/discord",
+            {
+              method: "PUT",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bot ${jwtToken}`,
+              },
+              body: JSON.stringify(data),
+            }
+          );
+
+          console.log(response.status);
+          console.log(await response.json());
+        } catch (error) {
+          console.log(error);
+        }
+
         return new JsonResponse({
           type: 4,
           data: {
@@ -223,6 +252,7 @@ router.all("*", () => new Response("Not Found.", { status: 404 }));
 
 export default {
   async fetch(request: Request, env: ENV) {
+    console.log(request);
     if (request.method === "POST") {
       const signature = request.headers.get("x-signature-ed25519");
       const timestamp = request.headers.get("x-signature-timestamp");
